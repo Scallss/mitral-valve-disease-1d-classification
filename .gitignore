@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+dl_artifacts/
+*.pt
+*.pth
+*.joblib
+*.npz
+wandb/
+.env
