@@ -2,6 +2,10 @@
 
 3-class classification of mitral valve disease (Control / Significant MR / Significant MS) using 1D deep learning on digitized 12-lead ECG signals.
 
+## Latest model: 1-D ResNet on extraction v2 / v3 (2026-10)
+
+The newest model is in [`ribeiro_resnet_v3/`](ribeiro_resnet_v3/): one flat 1-D ResNet (five fold networks per extraction version, plain probabilities, no blend weights or thresholds) with its weights, `predict.py` and the training recipe. On the 3,626 held-out scans: AUC 0.840 / macro-F1 0.606 (extraction v2) and 0.834 / 0.595 (v3, with overlap tracking), against 0.826 AUC for the `rib_ext` + `multitask` ensemble below on the 3,617 scans both were scored on. The extraction code is in the [`ecg-1d-digitization`](https://github.com/Scallss/ecg-1d-digitization) repository (branch `release-v2-v3-2026-10`). The table and the notebooks below describe the earlier ensemble.
+
 ## Results Summary
 
 | Method | Macro F1 | AUC | Ctrl Recall | MR Recall | MS Recall |

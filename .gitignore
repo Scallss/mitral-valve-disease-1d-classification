@@ -8,3 +8,6 @@ dl_artifacts/
 *.npz
 wandb/
 .env
+
+# Latest model weights (released)
+!ribeiro_resnet_v3/weights/**/*.pt
