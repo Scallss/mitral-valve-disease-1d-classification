@@ -2,14 +2,18 @@
 
 Three-class classification (Control / significant MR / significant MS) from a digitized 12-lead ECG. One flat 1-D ResNet (7.9 M parameters, from scratch), five fold networks per extraction version, class probability = mean of the five softmax outputs, class = argmax. No blend weights, no thresholds, no clinical-feature step.
 
-| Version | Digitizer (repo `ecg-1d-digitization`, branch `release-v2-v3-2026-10`) | Weights |
+| Version | Digitizer (repo `ecg-1d-digitization`) | Weights (Kaggle dataset) |
 |---|---|---|
 | v2 | `pipeline/bfss`, preset `black165_stable_sep_repair` (ink filter + stability-based lead segmentation with repair) | `weights/v2_bfss/fold0..4.pt` |
 | v3 | `pipeline/bfss_tracker`, preset `black165_stable_sep_repair_tracker` (v2 + overlap tracking) | `weights/v3_tracker/fold0..4.pt` |
 
 Use the weights with the extraction they were trained on.
 
-The same weights (and `model.py`, `predict.py`) are also published as a Kaggle dataset: [https://www.kaggle.com/datasets/pascalhafidzfajri/mitral-resnet1d-v2-v3](https://www.kaggle.com/datasets/pascalhafidzfajri/mitral-resnet1d-v2-v3).
+**The weights are not stored in this repository.** They are in the Kaggle dataset [pascalhafidzfajri/mitral-resnet1d-v2-v3](https://www.kaggle.com/datasets/pascalhafidzfajri/mitral-resnet1d-v2-v3) (five fold networks per version, fp16, with `SHA256SUMS`). Download them next to `predict.py`:
+
+```bash
+kaggle datasets download -d pascalhafidzfajri/mitral-resnet1d-v2-v3 --unzip -p .      # creates ./weights/v2_bfss and ./weights/v3_tracker
+```
 
 ## Use
 
@@ -40,4 +44,4 @@ Cost per scan on a free Kaggle machine (Tesla T4, 4 vCPU, batch 1, PyTorch fp32,
 - One seed. The seed-to-seed spread of the full recipe is about 0.002 AUC (out-of-fold) and about 0.03 macro-F1, so v2 and v3 cannot be told apart from these numbers.
 - Pool and held-out set come from the same acquisition batches: this is not an external validation, and it is not a clinical validation.
 - The digitizer assumes the 3x4 + rhythm strip layout in standard lead order (an optional adaptive layout exists in the digitizer repository, validated on synthetic sheets only).
-- Weights were trained on the private RSJPD Harapan Kita data set; the data itself is not included. `weights/SHA256SUMS` lists the checkpoint hashes (fp16 weights of the weight-averaged model at epoch 20).
+- Weights were trained on the private RSJPD Harapan Kita data set; the data itself is not included. `weights/SHA256SUMS` in the Kaggle dataset lists the checkpoint hashes (fp16 weights of the weight-averaged model at epoch 20).

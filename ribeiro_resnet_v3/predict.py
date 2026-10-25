@@ -5,8 +5,10 @@
     # from an exported .npz of the digitizer (key signal_matrix, 5000 x 12)
     python predict.py --version v3 --npz export.npz
 
---version v3: extraction with overlap tracking (preset black165_stable_sep_repair_tracker, weights/v3_tracker).
---version v2: extraction without it (preset black165_stable_sep_repair, weights/v2_bfss).
+--version v3: extraction with overlap tracking (preset black165_stable_sep_repair_tracker, weights in <weights>/v3_tracker).
+--version v2: extraction without it (preset black165_stable_sep_repair, weights in <weights>/v2_bfss).
+The weights are not part of this repository; download the Kaggle dataset pascalhafidzfajri/mitral-resnet1d-v2-v3 into ./weights (or pass --weights DIR):
+    kaggle datasets download -d pascalhafidzfajri/mitral-resnet1d-v2-v3 --unzip -p .
 Output: one CSV line per input: name, p_Control, p_MR, p_MS, predicted class. The probabilities follow the training mix (40% Control, 40% MR, 20% MS), not the clinical prevalence.
 """
 import argparse, os, sys
@@ -45,10 +47,13 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("inputs", nargs="*", help="scan images (.png / .jpg)"); ap.add_argument("--npz", nargs="*", default=[], help="digitizer exports with signal_matrix")
     ap.add_argument("--version", choices=list(VERSIONS), default="v3"); ap.add_argument("--digitizer", default=str(HERE.parents[1] / "ecg-1d-digitization"), help="root of the digitizer repository")
+    ap.add_argument("--weights", default=str(HERE / "weights"), help="folder with v2_bfss/ and v3_tracker/ (from the Kaggle dataset)")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     a = ap.parse_args()
     if not a.inputs and not a.npz: ap.error("give scan images or --npz files")
-    nets = load_ensemble(HERE / "weights" / VERSIONS[a.version]["weights"], a.device)
+    wdir = Path(a.weights) / VERSIONS[a.version]["weights"]
+    if not (wdir / "fold0.pt").exists(): sys.exit(f"weights not found in {wdir}; download the Kaggle dataset pascalhafidzfajri/mitral-resnet1d-v2-v3 (see the top of this file)")
+    nets = load_ensemble(wdir, a.device)
     digitize = get_digitizer(a.digitizer, a.version) if a.inputs else None
     print("name,p_Control,p_MR,p_MS,predicted")
     for name in a.inputs + a.npz:
