@@ -9,6 +9,8 @@ Three-class classification (Control / significant MR / significant MS) from a di
 
 Use the weights with the extraction they were trained on.
 
+The same weights (and `model.py`, `predict.py`) are also published as a Kaggle dataset: [https://www.kaggle.com/datasets/pascalhafidzfajri/mitral-resnet1d-v2-v3](https://www.kaggle.com/datasets/pascalhafidzfajri/mitral-resnet1d-v2-v3).
+
 ## Use
 
 ```bash
